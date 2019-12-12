@@ -1,0 +1,103 @@
+<?php
+	session_start();  
+	if(!$_SESSION['name'])  
+	{  
+		header("Location: login.php"); 
+		exit();
+	}
+	else
+	{
+		$my_file = fopen("buttonStatus.txt", "r+") or die("Error..!!!!!Cannot Open file");
+		$switchStatus = array("fan" => array("",""), 
+								"bulb" => array("",""),
+								"tv" => array("",""),
+								"ac" => array("","")
+								);
+		$currentStatus = array("fan" => "", 
+								"bulb" => "",
+								"tv" => "",
+								"ac" => ""
+								);
+		$keys = array_keys($switchStatus);
+		for($i = 0; $i < count($keys); $i++)
+		{
+			$status = trim(fgets($my_file));
+			if ($status === "ON") 
+	    	{
+	    		$currentStatus[$keys[$i]] = "ON";
+	    		$switchStatus[$keys[$i]][0] = "checked = ''";
+	    		$switchStatus[$keys[$i]][1] = "";
+	    	}
+	    	else
+	    	{
+	    		$currentStatus[$keys[$i]] = "OFF";
+	    		$switchStatus[$keys[$i]][0] = "";
+	    		$switchStatus[$keys[$i]][1] = "checked = ''";
+	    	}
+		}
+		fclose($my_file);
+	    echo ("
+	    	<html>
+			    <head>
+					<title>Final Year Project</title>
+					<link rel='shortcut icon' type='image/x-icon' href='images/title_icon.jpg' />
+					<link rel='stylesheet' type='text/css' href='style.css'>
+					<link href='https://fonts.googleapis.com/css?family=Berkshire+Swash|Source+Sans+Pro:400,700' rel='stylesheet'>
+					<script type='text/javascript' src='lib/jquery-3.3.1.min.js'></script>
+					<script type='text/javascript' src='script.js'></script>
+					<script src='https://use.fontawesome.com/58f0475128.js'></script>
+					<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+				</head>
+				<body>
+					<div id='title'>
+						<h1>Web <i class='fa fa-wifi' aria-hidden='true'></i>  Based Home Automation <i class='fa fa-lightbulb-o' aria-hidden='true'></i> System Using Raspberry Pi</h1>
+					</div>
+					<div id='content'>
+						<div id='user'>
+							<marquee><h2>Welcome <span> " . $_SESSION['name'] . " </span></h2></marquee>
+						</div>
+						<div id='appliances'>
+							<form action = 'buttonStatusWriter.php' method = 'POST'>
+								<div class='item'>
+									<span>Fan (" . $currentStatus['fan'] . ") </span>
+									<input type = 'radio' name = 'fan' id ='fan_on' value = 'ON'" . $switchStatus['fan'][0] . ">
+									<label for ='fan_on'>ON</label>
+									<input type = 'radio' name = 'fan' id ='fan_off' value = 'OFF'" . $switchStatus['fan'][1] . ">
+									<label for ='fan_off'>OFF</label>
+								</div>
+								<div class='item'>
+									<span>Bulb (" . $currentStatus['bulb'] . ") </span>
+									<input type = 'radio' name = 'bulb' id ='bulb_on' value = 'ON'" . $switchStatus['bulb'][0]. ">
+									<label for ='bulb_on'>ON</label>
+									<input type = 'radio' name = 'bulb' id ='bulb_off' value = 'OFF'" . $switchStatus['bulb'][1] . ">
+									<label for ='bulb_off'>OFF</label>
+								</div>
+								<div class='item'>
+									<span>TV (" . $currentStatus['tv'] . ") </span>
+									<input type = 'radio' name = 'tv' id ='tv_on' value = 'ON'" . $switchStatus['tv'][0] . ">
+									<label for ='tv_on'>ON</label>
+									<input type = 'radio' name = 'tv' id ='tv_off' value = 'OFF'" . $switchStatus['tv'][1] . ">
+									<label for ='tv_off'>OFF</label>
+								</div>
+								<div class='item'>
+									<span>AC (" . $currentStatus['ac'] . ") </span>
+									<input type = 'radio' name = 'ac' id ='ac_on' value = 'ON'" . $switchStatus['ac'][0] . ">
+									<label for ='ac_on'>ON</label>
+									<input type = 'radio' name = 'ac' id ='ac_off' value = 'OFF'" . $switchStatus['ac'][1] . ">
+									<label for ='ac_off'>OFF</label>
+								</div>
+								<button type = 'submit'>Save <i class='fa fa-power-off' aria-hidden='true'></i> </button>
+							</form>
+						</div>
+						<div id='sign_out'>
+							<form action='logout.php' method='POST'>
+								<label for='logout'>Are you done?</label>
+								<button type='submit' value='logout' id='logout'>Sign Out</button>
+							</form>
+						</div>
+					</div>
+				</body>
+			</html>
+	    	");	
+	}
+?>
